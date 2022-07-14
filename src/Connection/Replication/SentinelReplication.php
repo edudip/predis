@@ -30,6 +30,8 @@ use Predis\Response\ServerException;
  */
 class SentinelReplication implements ReplicationInterface
 {
+
+    protected $prefixLog = "PREDIS_DEBUG: ";
     /**
      * @var NodeConnectionInterface
      */
@@ -326,6 +328,7 @@ class SentinelReplication implements ReplicationInterface
                     );
                 }
             } catch (ConnectionException $exception) {
+                error_log($this->prefixLog . $exception->getMessage());
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
@@ -456,6 +459,7 @@ class SentinelReplication implements ReplicationInterface
 
                 $this->add($masterConnection);
             } catch (ConnectionException $exception) {
+                error_log($this->prefixLog . $exception->getMessage());
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
@@ -488,6 +492,7 @@ class SentinelReplication implements ReplicationInterface
                     $this->add($this->connectionFactory->create($slaveParameters));
                 }
             } catch (ConnectionException $exception) {
+                error_log($this->prefixLog . $exception->getMessage());
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
@@ -700,6 +705,7 @@ class SentinelReplication implements ReplicationInterface
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
             } catch (CommunicationException $exception) {
+                error_log($this->prefixLog . $exception->getMessage());
                 $this->wipeServerList();
                 $exception->getConnection()->disconnect();
 
